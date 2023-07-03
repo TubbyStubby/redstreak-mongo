@@ -24,6 +24,7 @@ export class MongoStore<T extends mongoDB.BSON.Document> {
             this.#client = options.client;
         } else if(options.url) {
             this.#client = new mongoDB.MongoClient(options.url);
+            this.#client.connect();
         } else {
             throw new Error("Client or Url required to initialize");
         }
