@@ -6,12 +6,15 @@ export class ItemMongoStore<T extends Item> extends MongoStore<T> implements Ite
     async find(id: number): Promise<T | undefined> {
         return await this.collection.findOne(
             { id } as mongoDB.Filter<T>,
-            { _id: 0 } as mongoDB.FindOptions<T>
+            { projection: { _id: 0 } }
         ) as T;
     }
 
     async findAll(): Promise<T[]> {
-        return await this.collection.find({}, { _id: 0 } as mongoDB.FindOptions<T>).toArray() as T[];
+        return await this.collection.find(
+            {},
+            { projection: { _id: 0 } }
+        ).toArray() as T[];
     }
 
     async remove(id: Item["id"]): Promise<void> {

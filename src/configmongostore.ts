@@ -6,12 +6,15 @@ export class ConfigMongoStore<T extends Config> extends MongoStore<T> implements
     async find(version: Config["version"]): Promise<T | undefined> {
         return await this.collection.findOne(
             { version } as mongoDB.Filter<T>,
-            { _id: 0 } as mongoDB.FindOptions<T>
+            { projection: { _id: 0 } }
         ) as T;
     }
 
     async findAll(): Promise<T[]> {
-        return await this.collection.find({}, { _id: 0 } as mongoDB.FindOptions<T>).toArray() as T[];
+        return await this.collection.find(
+            {},
+            { projection: { _id: 0 } }
+        ).toArray() as T[];
     }
 
     async remove(version: Config["version"]): Promise<void> {
