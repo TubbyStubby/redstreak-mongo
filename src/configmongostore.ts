@@ -26,17 +26,29 @@ export class ConfigMongoStore<T extends Config> extends MongoStore<T> implements
         await this.collection.insertOne(config as any);
     }
 
-    async update(version: Config["version"], query: mongoDB.UpdateFilter<T>): Promise<void> {
-        await this.collection.updateOne(
-            { version } as mongoDB.Filter<T>,
-            query
-        );
-    }
-
     async updateField<K extends keyof T>(version: Config["version"], field: K, value: T[K]): Promise<void> {
         await this.collection.updateOne(
             { version } as mongoDB.Filter<T>,
             { $set: { [field]: value } } as mongoDB.UpdateFilter<T>
         );
+    }
+
+    async updateFields(version: number, values: { [K in keyof T]: T[K]; }): Promise<void> {
+        await this.collection.updateOne(
+            { version } as mongoDB.Filter<T>,
+            { $set: values }
+        )
+    }
+
+    async flipStatus(versions: number[]): Promise<void>;
+    async flipStatus(...versions: number[]): Promise<void>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async flipStatus(...versions: any): Promise<void> {
+        await this.collection.updateMany(
+            { version: { $in: versions } } as mongoDB.Filter<T>,
+            // TODO: fix typings
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            <any>{ $bit: { status: { xor: 1 } } }
+        )
     }
 }
