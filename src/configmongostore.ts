@@ -33,7 +33,7 @@ export class ConfigMongoStore<T extends Config> extends MongoStore<T> implements
         );
     }
 
-    async updateFields(version: number, values: { [K in keyof T]: T[K]; }): Promise<void> {
+    async updateFields(version: number, values: { [K in keyof Partial<T>]: Partial<T>[K]; }): Promise<void> {
         await this.collection.updateOne(
             { version } as mongoDB.Filter<T>,
             { $set: values }
