@@ -2,7 +2,7 @@ import * as mongoDB from "mongodb";
 import { Config, ConfigColdStore } from "redstreak";
 import { MongoStore } from "./mongostore";
 
-export class ConfigMongoStore<T extends Config> extends MongoStore<T> implements ConfigColdStore<T, mongoDB.UpdateFilter<T>> {
+export class ConfigMongoStore<T extends Config> extends MongoStore<T> implements ConfigColdStore<T> {
     async find(version: Config["version"]): Promise<T | undefined> {
         return await this.collection.findOne(
             { version } as mongoDB.Filter<T>,
